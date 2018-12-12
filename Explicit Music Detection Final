@@ -1,10 +1,12 @@
 print("Explicit Music Detector")
+# import modules like Beautiful Soup 4 and Colorama
 import requests
 from bs4 import BeautifulSoup
 import colorama
 from colorama import Fore
 from colorama import Style
 
+# Created function that goes to url and scrapes html for lyrics, then converts text into string
 def scrap_song_url(url):
     page = requests.get(url)
     html = BeautifulSoup(page.text, 'html.parser')
@@ -12,30 +14,44 @@ def scrap_song_url(url):
 
     return lyrics
     
-try:
+    try:
     explicit = False
-    swear_words = ['fuckin', 'fuck' ,'motherfucker', 'muthafucka', 'shits', 'shit', 'bitches', 'bitch', 'ass', 'niggas', 'nigga', 'hoe', 'hoes', 'pussy', "dick"]
-    song = str(input("Enter the song name: "))
-    artist = str(input("Enter the artist(s) name seperated with 'and': "))
+    swear_words = ['fuck', 'shit', 'bitch', 'ass', 'niggas', 'nigga', 'hoe', 'pussy', "dick"] #list of some explicit words
+    song = str(input("Enter the song name: ")) #user inputs song
+    artist = str(input("Enter the artist(s) name seperated with 'and': ")) #user inputs artist
     url = "https://genius.com/"
-    for word in artist.split():
+    
+    
+    # Now we use the song name and artist name to create the correct format of the Genius.com url
+    for word in artist.split(): 
         url = url + word + "-"
     for word in song.split():
         url = url + word + "-"
     url = url + "lyrics"
+    
+    # Now that we have the url we can scrape the lyric data from it (using our previous function)
     lyrics = scrap_song_url(url)
+    
+    # Now we must check if there are any swear words in the lyrics
     for i in swear_words:
         if i in lyrics:
             explicit = True
-    type(lyrics)
+    
+    # Simple print statements that are printed depending on whether there are swear words in the lyrics
+    # clean song means that the print statement eill be green
+    # explicit song means that the print statement will be red
     if explicit:
-        print(song,"by", artist,"is an explicit song!")
+        print("\n" + Fore.RED + song,"by", artist,"is an explicit song!" + Style.RESET_ALL)
     else:
-        print(song,"by", artist,"is a clean song!")
+        print("\n" + Fore.GREEN + song,"by", artist,"is a clean song!" + Style.RESET_ALL)
+    
+    # Now we will traverse through our swear word list
+    # We change each part of the lyrics that correponds to the list to red
     for word in swear_words:
         if word in lyrics.lower():
-            lyrics = lyrics.replace(word,  Fore.RED + word + Style.RESET_ALL)
-    print(lyrics)
-    print(lyrics.lower())
+            lyrics = lyrics.replace(word, Fore.RED + word + Style.RESET_ALL)
+    print(lyrics) # Print formatted lyrics
+    
+    
 except AttributeError:
-    print("\nThe song/artist you entered was not found.")
+    print("\nThe song/artist you entered was not found.") # handles error when song that doesn't exist is entered

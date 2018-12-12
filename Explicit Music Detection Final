@@ -1,0 +1,41 @@
+print("Explicit Music Detector")
+import requests
+from bs4 import BeautifulSoup
+import colorama
+from colorama import Fore
+from colorama import Style
+
+def scrap_song_url(url):
+    page = requests.get(url)
+    html = BeautifulSoup(page.text, 'html.parser')
+    lyrics = html.find('div', class_='lyrics').get_text()
+
+    return lyrics
+    
+try:
+    explicit = False
+    swear_words = ['fuckin', 'fuck' ,'motherfucker', 'muthafucka', 'shits', 'shit', 'bitches', 'bitch', 'ass', 'niggas', 'nigga', 'hoe', 'hoes', 'pussy', "dick"]
+    song = str(input("Enter the song name: "))
+    artist = str(input("Enter the artist(s) name seperated with 'and': "))
+    url = "https://genius.com/"
+    for word in artist.split():
+        url = url + word + "-"
+    for word in song.split():
+        url = url + word + "-"
+    url = url + "lyrics"
+    lyrics = scrap_song_url(url)
+    for i in swear_words:
+        if i in lyrics:
+            explicit = True
+    type(lyrics)
+    if explicit:
+        print(song,"by", artist,"is an explicit song!")
+    else:
+        print(song,"by", artist,"is a clean song!")
+    for word in swear_words:
+        if word in lyrics.lower():
+            lyrics = lyrics.replace(word,  Fore.RED + word + Style.RESET_ALL)
+    print(lyrics)
+    print(lyrics.lower())
+except AttributeError:
+    print("\nThe song/artist you entered was not found.")
